@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.name }} - SimpleLMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
+                    <li class="breadcrumb-item active">{{ course.code }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Course Info -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1 fw-bold">{{ course.name }}</h3>
+                            <p class="mb-0"><span class="badge bg-white text-primary fs-6">{{ course.code }}</span></p>
+                        </div>
+                        <span class="badge bg-white text-primary fs-4">{{ course.credits }} SKS</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Deskripsi</h5>
+                    <p class="text-muted">{{ course.description|default:"Tidak ada deskripsi" }}</p>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-bold text-muted mb-2">
+                                <i class="bi bi-person-fill me-2"></i>Dosen Pengampu
+                            </h6>
+                            <p class="mb-0">
+                                {{ course.instructor.get_full_name|default:course.instructor.username|default:"Belum ada dosen" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="fw-bold text-muted mb-2">
+                                <i class="bi bi-people-fill me-2"></i>Mahasiswa Terdaftar
+                            </h6>
+                            <p class="mb-0">{{ enrollments.count }} mahasiswa</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted mb-2">
+                                <i class="bi bi-calendar-plus me-2"></i>Dibuat
+                            </h6>
+                            <p class="mb-0">{{ course.created_at|date:"d F Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted mb-2">
+                                <i class="bi bi-calendar-check me-2"></i>Terakhir Diupdate
+                            </h6>
+                            <p class="mb-0">{{ course.updated_at|date:"d F Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials Section -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="bi bi-file-earmark-text me-2"></i>Materi Pembelajaran
+                        </h5>
+                        <a href="{% url 'material_create' course.pk %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>Tambah Materi
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if materials %}
+                        <div class="list-group list-group-flush">
+                            {% for material in materials %}
+                            <div class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-primary me-2">{{ material.order }}</span>
+                                            <h6 class="mb-0 fw-bold">{{ material.title }}</h6>
+                                        </div>
+                                        <p class="text-muted small mb-2">{{ material.content|truncatewords:20 }}</p>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock me-1"></i>{{ material.created_at|date:"d M Y" }}
+                                        </small>
+                                    </div>
+                                    <div class="btn-group btn-group-sm ms-3">
+                                        <a href="{% url 'material_update' material.pk %}" 
+                                           class="btn btn-outline-primary" 
+                                           title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{% url 'material_delete' material.pk %}" 
+                                           class="btn btn-outline-danger" 
+                                           title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-inbox display-4 text-muted mb-3 d-block"></i>
+                            <p class="text-muted">Belum ada materi pembelajaran</p>
+                            <a href="{% url 'material_create' course.pk %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-2"></i>Tambah Materi Pertama
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Actions Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-gear-fill me-2"></i>Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'course_update' course.pk %}" class="btn btn-outline-primary">
+                            <i class="bi bi-pencil-square me-2"></i>Edit Course
+                        </a>
+                        <a href="{% url 'material_create' course.pk %}" class="btn btn-outline-success">
+                            <i class="bi bi-file-plus me-2"></i>Tambah Materi
+                        </a>
+                        <a href="{% url 'course_delete' course.pk %}" class="btn btn-outline-danger">
+                            <i class="bi bi-trash me-2"></i>Hapus Course
+                        </a>
+                        <hr>
+                        <a href="{% url 'course_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Kembali ke List
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Enrollments -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-people-fill me-2"></i>Mahasiswa Terdaftar
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if enrollments %}
+                        <div class="list-group list-group-flush">
+                            {% for enrollment in enrollments %}
+                            <div class="list-group-item px-0 py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-person-circle me-2"></i>
+                                        <small>{{ enrollment.student.username }}</small>
+                                    </div>
+                                    {% if enrollment.grade %}
+                                    <span class="badge bg-success">{{ enrollment.grade }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">-</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if enrollments.count >= 10 %}
+                        <div class="text-center mt-3">
+                            <a href="{% url 'enrollment_list' %}" class="btn btn-sm btn-outline-primary">
+                                Lihat Semua Enrollment
+                            </a>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="bi bi-person-x display-6 text-muted d-block mb-2"></i>
+                            <p class="text-muted small mb-0">Belum ada mahasiswa</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

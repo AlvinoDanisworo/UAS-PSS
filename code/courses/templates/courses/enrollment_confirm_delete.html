@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Hapus Enrollment - SimpleLMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'enrollment_list' %}">Enrollments</a></li>
+                    <li class="breadcrumb-item active">Hapus Enrollment</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-header bg-danger text-white border-0 py-3">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Konfirmasi Hapus Enrollment
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-danger border-0 mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-shield-fill-exclamation display-6 me-3"></i>
+                            <div>
+                                <h5 class="mb-1 fw-bold">Peringatan!</h5>
+                                <p class="mb-0">Tindakan ini tidak dapat dibatalkan.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="lead mb-4">
+                        Apakah Anda yakin ingin menghapus enrollment berikut?
+                    </p>
+
+                    <!-- Enrollment Info -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Student Info -->
+                                <div class="col-12 mb-3">
+                                    <h6 class="fw-bold text-muted mb-2">
+                                        <i class="bi bi-person-fill me-2"></i>Mahasiswa
+                                    </h6>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                             style="width: 45px; height: 45px; font-size: 1.2rem; font-weight: bold;">
+                                            {{ enrollment.student.username|first|upper }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ enrollment.student.username }}</div>
+                                            {% if enrollment.student.get_full_name %}
+                                            <small class="text-muted">{{ enrollment.student.get_full_name }}</small>
+                                            {% endif %}
+                                            {% if enrollment.student.email %}
+                                            <br><small class="text-muted"><i class="bi bi-envelope me-1"></i>{{ enrollment.student.email }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Course Info -->
+                                <div class="col-12 mb-3">
+                                    <h6 class="fw-bold text-muted mb-2">
+                                        <i class="bi bi-book-fill me-2"></i>Mata Kuliah
+                                    </h6>
+                                    <div class="fw-bold">{{ enrollment.course.name }}</div>
+                                    <div class="mt-1">
+                                        <span class="badge bg-primary">{{ enrollment.course.code }}</span>
+                                        <span class="badge bg-secondary ms-1">{{ enrollment.course.credits }} SKS</span>
+                                    </div>
+                                </div>
+
+                                <!-- Grade Info -->
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-muted mb-2">
+                                        <i class="bi bi-award-fill me-2"></i>Nilai
+                                    </h6>
+                                    {% if enrollment.grade %}
+                                        {% if enrollment.grade == 'A' %}
+                                            <span class="badge bg-success fs-5">{{ enrollment.grade }}</span>
+                                        {% elif enrollment.grade == 'B' or enrollment.grade == 'C' %}
+                                            <span class="badge bg-primary fs-5">{{ enrollment.grade }}</span>
+                                        {% elif enrollment.grade == 'D' %}
+                                            <span class="badge bg-warning fs-5">{{ enrollment.grade }}</span>
+                                        {% else %}
+                                            <span class="badge bg-danger fs-5">{{ enrollment.grade }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">Belum ada nilai</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Enrollment Date -->
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="fw-bold text-muted mb-2">
+                                        <i class="bi bi-calendar-plus me-2"></i>Tanggal Daftar
+                                    </h6>
+                                    <p class="mb-0">{{ enrollment.enrolled_at|date:"d F Y" }}</p>
+                                    <small class="text-muted">{{ enrollment.enrolled_at|date:"H:i" }} WIB</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning about grade -->
+                    {% if enrollment.grade %}
+                    <div class="alert alert-warning border-0 mb-4">
+                        <h6 class="fw-bold mb-2">
+                            <i class="bi bi-exclamation-circle me-2"></i>Perhatian:
+                        </h6>
+                        <p class="mb-0 small">
+                            Enrollment ini sudah memiliki nilai <strong class="badge bg-warning">{{ enrollment.grade }}</strong>. 
+                            Menghapus enrollment akan menghilangkan data nilai mahasiswa untuk mata kuliah ini.
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger px-4">
+                                <i class="bi bi-trash me-2"></i>
+                                Ya, Hapus Enrollment
+                            </button>
+                            <a href="{% url 'enrollment_list' %}" class="btn btn-outline-secondary px-4">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="card border-0 shadow-sm mt-4 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-info-circle me-2 text-primary"></i>Informasi
+                    </h6>
+                    <p class="small mb-0">
+                        Menghapus enrollment akan menghapus data pendaftaran mahasiswa dari mata kuliah. 
+                        Jika mahasiswa ingin mengambil mata kuliah ini lagi, enrollment perlu dibuat ulang. 
+                        Jika Anda tidak yakin, sebaiknya kembali atau konsultasikan dengan administrator.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

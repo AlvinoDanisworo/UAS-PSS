@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Tambah{% endif %} Course - SimpleLMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
+                    {% if form.instance.pk %}
+                    <li class="breadcrumb-item"><a href="{% url 'course_detail' form.instance.pk %}">{{ form.instance.code }}</a></li>
+                    <li class="breadcrumb-item active">Edit</li>
+                    {% else %}
+                    <li class="breadcrumb-item active">Tambah Course</li>
+                    {% endif %}
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white border-0 py-3">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi {% if form.instance.pk %}bi-pencil-square{% else %}bi-plus-circle{% endif %} me-2"></i>
+                        {% if form.instance.pk %}Edit Course{% else %}Tambah Course Baru{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Display non-field errors -->
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Course Code -->
+                        <div class="mb-4">
+                            <label for="{{ form.code.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-key me-2"></i>Kode Mata Kuliah
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.code }}
+                            {% if form.code.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.code.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Contoh: IF101, MAT201, PHY301
+                            </div>
+                        </div>
+
+                        <!-- Course Name -->
+                        <div class="mb-4">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-book me-2"></i>Nama Mata Kuliah
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.name.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-card-text me-2"></i>Deskripsi
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Jelaskan tentang mata kuliah ini, tujuan pembelajaran, dll.
+                            </div>
+                        </div>
+
+                        <!-- Credits -->
+                        <div class="mb-4">
+                            <label for="{{ form.credits.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-star me-2"></i>SKS (Satuan Kredit Semester)
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.credits }}
+                            {% if form.credits.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.credits.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Jumlah SKS (biasanya 1-4 SKS)
+                            </div>
+                        </div>
+
+                        <!-- Instructor -->
+                        <div class="mb-4">
+                            <label for="{{ form.instructor.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-person-badge me-2"></i>Dosen Pengampu
+                            </label>
+                            {{ form.instructor }}
+                            {% if form.instructor.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.instructor.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Pilih dosen yang mengampu mata kuliah ini
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi {% if form.instance.pk %}bi-save{% else %}bi-plus-circle{% endif %} me-2"></i>
+                                {% if form.instance.pk %}Update Course{% else %}Simpan Course{% endif %}
+                            </button>
+                            {% if form.instance.pk %}
+                            <a href="{% url 'course_detail' form.instance.pk %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Batal
+                            </a>
+                            {% else %}
+                            <a href="{% url 'course_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Batal
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card border-0 shadow-sm mt-4 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-lightbulb me-2 text-warning"></i>Tips
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li class="mb-2">
+                            <strong>Kode Mata Kuliah</strong> harus unik dan tidak boleh sama dengan kode lain
+                        </li>
+                        <li class="mb-2">
+                            <strong>Deskripsi</strong> yang jelas membantu mahasiswa memahami materi yang akan dipelajari
+                        </li>
+                        <li class="mb-2">
+                            <strong>SKS</strong> menentukan bobot mata kuliah dalam perhitungan IP
+                        </li>
+                        <li>
+                            Pastikan <strong>Dosen Pengampu</strong> sudah terdaftar di sistem
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

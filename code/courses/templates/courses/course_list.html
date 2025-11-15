@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - SimpleLMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="fw-bold">
+                <i class="bi bi-book-fill me-2 text-primary"></i>
+                Daftar Courses
+            </h1>
+            <p class="text-muted">Kelola semua mata kuliah yang tersedia</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'course_create' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle-fill me-2"></i>Tambah Course
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <form method="get" class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" 
+                               name="q" 
+                               class="form-control border-start-0" 
+                               placeholder="Cari course berdasarkan kode, nama, atau deskripsi..."
+                               value="{{ query }}">
+                        <button type="submit" class="btn btn-primary px-4">Cari</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    {% if courses %}
+    <div class="row g-4">
+        {% for course in courses %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card-header bg-primary text-white border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">{{ course.code }}</h5>
+                        <span class="badge bg-white text-primary">{{ course.credits }} SKS</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title fw-bold mb-3">{{ course.name }}</h6>
+                    <p class="card-text text-muted small mb-3">
+                        {{ course.description|truncatewords:15|default:"Tidak ada deskripsi" }}
+                    </p>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-person-fill text-muted me-2"></i>
+                        <small class="text-muted">
+                            {{ course.instructor.get_full_name|default:course.instructor.username|default:"Belum ada dosen" }}
+                        </small>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-people-fill text-muted me-2"></i>
+                        <small class="text-muted">
+                            {{ course.enrollment_count }} mahasiswa terdaftar
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'course_detail' course.pk %}" class="btn btn-outline-primary">
+                            <i class="bi bi-eye-fill me-2"></i>Lihat Detail
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm text-center py-5">
+                <div class="card-body">
+                    <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                    <h4 class="text-muted mb-3">
+                        {% if query %}
+                            Tidak ada course yang ditemukan untuk "{{ query }}"
+                        {% else %}
+                            Belum ada course
+                        {% endif %}
+                    </h4>
+                    {% if not query %}
+                    <a href="{% url 'course_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle-fill me-2"></i>Tambah Course Pertama
+                    </a>
+                    {% else %}
+                    <a href="{% url 'course_list' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-2"></i>Kembali ke Semua Course
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Hapus Materi - SimpleLMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'course_list' %}">Courses</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'course_detail' material.course.pk %}">{{ material.course.code }}</a></li>
+                    <li class="breadcrumb-item active">Hapus Materi</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-header bg-danger text-white border-0 py-3">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Konfirmasi Hapus Materi
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-danger border-0 mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-shield-fill-exclamation display-6 me-3"></i>
+                            <div>
+                                <h5 class="mb-1 fw-bold">Peringatan!</h5>
+                                <p class="mb-0">Tindakan ini tidak dapat dibatalkan.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="lead mb-4">
+                        Apakah Anda yakin ingin menghapus materi berikut?
+                    </p>
+
+                    <!-- Material Info -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-primary me-2">{{ material.order }}</span>
+                                        <h5 class="fw-bold mb-0">{{ material.title }}</h5>
+                                    </div>
+                                    <p class="text-muted small mb-0">
+                                        <i class="bi bi-book me-1"></i>
+                                        {{ material.course.name }}
+                                    </p>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <h6 class="fw-bold text-muted mb-2">
+                                        <i class="bi bi-card-text me-2"></i>Konten Materi
+                                    </h6>
+                                    <p class="text-muted mb-0">{{ material.content|truncatewords:50 }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-muted mb-2">
+                                        <i class="bi bi-calendar-plus me-2"></i>Dibuat
+                                    </h6>
+                                    <p class="mb-0">{{ material.created_at|date:"d M Y, H:i" }}</p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-muted mb-2">
+                                        <i class="bi bi-calendar-check me-2"></i>Diupdate
+                                    </h6>
+                                    <p class="mb-0">{{ material.updated_at|date:"d M Y, H:i" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger px-4">
+                                <i class="bi bi-trash me-2"></i>
+                                Ya, Hapus Materi
+                            </button>
+                            <a href="{% url 'course_detail' material.course.pk %}" class="btn btn-outline-secondary px-4">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="card border-0 shadow-sm mt-4 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-info-circle me-2 text-primary"></i>Informasi
+                    </h6>
+                    <p class="small mb-0">
+                        Menghapus materi akan menghilangkan konten pembelajaran dari course. 
+                        Jika Anda tidak yakin, sebaiknya kembali dan simpan materi terlebih dahulu 
+                        atau pertimbangkan untuk mengedit materi daripada menghapusnya.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

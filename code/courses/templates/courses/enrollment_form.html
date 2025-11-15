@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Tambah{% endif %} Enrollment - SimpleLMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'enrollment_list' %}">Enrollments</a></li>
+                    <li class="breadcrumb-item active">
+                        {% if form.instance.pk %}Edit{% else %}Tambah{% endif %} Enrollment
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info text-white border-0 py-3">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi {% if form.instance.pk %}bi-pencil-square{% else %}bi-person-plus{% endif %} me-2"></i>
+                        {% if form.instance.pk %}Edit Enrollment{% else %}Tambah Enrollment Baru{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Display non-field errors -->
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Student -->
+                        <div class="mb-4">
+                            <label for="{{ form.student.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-person-fill me-2"></i>Mahasiswa
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.student }}
+                            {% if form.student.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.student.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Pilih mahasiswa yang akan didaftarkan
+                            </div>
+                        </div>
+
+                        <!-- Course -->
+                        <div class="mb-4">
+                            <label for="{{ form.course.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-book-fill me-2"></i>Mata Kuliah
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.course }}
+                            {% if form.course.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.course.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Pilih mata kuliah yang akan diikuti
+                            </div>
+                        </div>
+
+                        <!-- Grade -->
+                        <div class="mb-4">
+                            <label for="{{ form.grade.id_for_label }}" class="form-label fw-bold">
+                                <i class="bi bi-award-fill me-2"></i>Nilai (Grade)
+                            </label>
+                            {{ form.grade }}
+                            {% if form.grade.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.grade.errors }}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Opsional - Nilai dapat diisi setelah mahasiswa mengikuti perkuliahan (A, B, C, D, E)
+                            </div>
+                        </div>
+
+                        <!-- Grade Legend -->
+                        <div class="card bg-light border-0 mb-4">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="bi bi-info-circle me-2"></i>Keterangan Nilai
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-0 small">
+                                            <li class="mb-2">
+                                                <span class="badge bg-success me-2">A</span>Sangat Baik (80-100)
+                                            </li>
+                                            <li class="mb-2">
+                                                <span class="badge bg-primary me-2">B</span>Baik (70-79)
+                                            </li>
+                                            <li>
+                                                <span class="badge bg-primary me-2">C</span>Cukup (60-69)
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-0 small">
+                                            <li class="mb-2">
+                                                <span class="badge bg-warning me-2">D</span>Kurang (50-59)
+                                            </li>
+                                            <li>
+                                                <span class="badge bg-danger me-2">E</span>Tidak Lulus (&lt;50)
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-info text-white px-4">
+                                <i class="bi {% if form.instance.pk %}bi-save{% else %}bi-plus-circle{% endif %} me-2"></i>
+                                {% if form.instance.pk %}Update Enrollment{% else %}Simpan Enrollment{% endif %}
+                            </button>
+                            <a href="{% url 'enrollment_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card border-0 shadow-sm mt-4 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-lightbulb me-2 text-warning"></i>Tips
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li class="mb-2">
+                            Pastikan <strong>mahasiswa</strong> dan <strong>course</strong> sudah terdaftar dalam sistem
+                        </li>
+                        <li class="mb-2">
+                            Satu mahasiswa tidak dapat mengambil course yang sama lebih dari sekali
+                        </li>
+                        <li class="mb-2">
+                            <strong>Nilai</strong> dapat dikosongkan saat pendaftaran awal dan diisi kemudian
+                        </li>
+                        <li>
+                            Gunakan nilai huruf (A, B, C, D, E) sesuai dengan standar penilaian kampus
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

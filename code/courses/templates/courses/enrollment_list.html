@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Enrollments - SimpleLMS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Enrollments</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h2 class="fw-bold mb-2">
+                <i class="bi bi-people-fill me-2"></i>Daftar Enrollment
+            </h2>
+            <p class="text-muted">Kelola pendaftaran mahasiswa ke mata kuliah</p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+            <a href="{% url 'enrollment_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Tambah Enrollment
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-search me-1"></i>Cari Mahasiswa
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="student" 
+                                   placeholder="Cari username mahasiswa..."
+                                   value="{{ request.GET.student }}">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-book me-1"></i>Filter Course
+                            </label>
+                            <select class="form-select" name="course">
+                                <option value="">Semua Course</option>
+                                {% for course in all_courses %}
+                                <option value="{{ course.pk }}" {% if request.GET.course == course.pk|stringformat:"s" %}selected{% endif %}>
+                                    {{ course.code }} - {{ course.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-filter me-1"></i>Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enrollments Table -->
+    {% if enrollments %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="px-4 py-3">#</th>
+                                    <th class="py-3">
+                                        <i class="bi bi-person me-1"></i>Mahasiswa
+                                    </th>
+                                    <th class="py-3">
+                                        <i class="bi bi-book me-1"></i>Course
+                                    </th>
+                                    <th class="py-3 text-center">
+                                        <i class="bi bi-star me-1"></i>SKS
+                                    </th>
+                                    <th class="py-3 text-center">
+                                        <i class="bi bi-award me-1"></i>Nilai
+                                    </th>
+                                    <th class="py-3">
+                                        <i class="bi bi-calendar me-1"></i>Tanggal
+                                    </th>
+                                    <th class="px-4 py-3 text-end">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in enrollments %}
+                                <tr>
+                                    <td class="px-4">{{ forloop.counter }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                 style="width: 35px; height: 35px; font-weight: bold;">
+                                                {{ enrollment.student.username|first|upper }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">{{ enrollment.student.username }}</div>
+                                                {% if enrollment.student.get_full_name %}
+                                                <small class="text-muted">{{ enrollment.student.get_full_name }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'course_detail' enrollment.course.pk %}" class="text-decoration-none">
+                                            <div class="fw-bold text-primary">{{ enrollment.course.name }}</div>
+                                            <small class="text-muted">{{ enrollment.course.code }}</small>
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary">{{ enrollment.course.credits }} SKS</span>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if enrollment.grade %}
+                                            {% if enrollment.grade == 'A' %}
+                                                <span class="badge bg-success fs-6">{{ enrollment.grade }}</span>
+                                            {% elif enrollment.grade == 'B' or enrollment.grade == 'C' %}
+                                                <span class="badge bg-primary fs-6">{{ enrollment.grade }}</span>
+                                            {% elif enrollment.grade == 'D' %}
+                                                <span class="badge bg-warning fs-6">{{ enrollment.grade }}</span>
+                                            {% else %}
+                                                <span class="badge bg-danger fs-6">{{ enrollment.grade }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ enrollment.enrolled_at|date:"d M Y" }}</small>
+                                    </td>
+                                    <td class="px-4 text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'enrollment_update' enrollment.pk %}" 
+                                               class="btn btn-outline-primary" 
+                                               title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'enrollment_delete' enrollment.pk %}" 
+                                               class="btn btn-outline-danger" 
+                                               title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-light border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Menampilkan {{ enrollments|length }} enrollment(s)
+                        </small>
+                        <a href="{% url 'enrollment_create' %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>Tambah Enrollment
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-person-x display-1 text-muted mb-3 d-block"></i>
+                    <h4 class="fw-bold mb-3">Belum Ada Enrollment</h4>
+                    <p class="text-muted mb-4">
+                        Belum ada mahasiswa yang terdaftar. Mulai tambahkan enrollment untuk mahasiswa Anda.
+                    </p>
+                    <a href="{% url 'enrollment_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Tambah Enrollment Pertama
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .table tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+</style>
+{% endblock %}
