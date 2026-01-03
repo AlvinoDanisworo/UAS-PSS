@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - LMS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #667eea;
+            margin-top: 30px;
+        }
+        .endpoint {
+            background: #f9f9f9;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+        .method {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .get { background: #61affe; color: white; }
+        .post { background: #49cc90; color: white; }
+        .put { background: #fca130; color: white; }
+        .delete { background: #f93e3e; color: white; }
+        
+        .auth-required {
+            background: #fff3cd;
+            color: #856404;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            display: inline-block;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        
+        .try-it {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f4fd;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #49cc90;
+            color: white;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        #response {
+            margin-top: 15px;
+            padding: 15px;
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .token-info {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 LMS API Documentation</h1>
+        <p>RESTful API dengan Token Authentication untuk Learning Management System</p>
+        
+        <h2>📌 Authentication</h2>
+        <p>API menggunakan JWT (JSON Web Token) authentication. Untuk mengakses protected endpoints, Anda perlu mendapatkan access token terlebih dahulu.</p>
+        
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/v1/login</strong>
+            <p>Login dan dapatkan JWT access & refresh tokens</p>
+            <pre>{
+  "username": "admin",
+  "password": "admin"
+}</pre>
+            <p><strong>Response:</strong></p>
+            <pre>{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "user": {
+    "id": 1,
+    "username": "admin",
+    "first_name": "Admin",
+    "last_name": "User",
+    "email": "admin@lms.com"
+  },
+  "message": "Login berhasil"
+}</pre>
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/v1/refresh</strong>
+            <p>Refresh access token menggunakan refresh token</p>
+            <pre>{
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}</pre>
+            <p><strong>Response:</strong></p>
+            <pre>{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}</pre>
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/v1/register</strong>
+            <p>Registrasi user baru</p>
+            <pre>{
+  "username": "newuser123",
+  "password": "password123",
+  "email": "user@example.com",
+  "first_name": "John",
+  "last_name": "Doe"
+}</pre>
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/v1/logout</strong>
+            <span class="auth-required">🔒 Auth Required</span>
+            <p>Logout dan blacklist refresh token</p>
+            <p><strong>Headers:</strong> Authorization: Bearer {access_token}</p>
+            <p><strong>Body:</strong></p>
+            <pre>{
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}</pre>
+        </div>
+
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/v1/me</strong>
+            <span class="auth-required">🔒 Auth Required</span>
+            <p>Get current authenticated user info</p>
+        </div>
+
+        <h2>👥 Users</h2>
+
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/v1/users</strong>
+            <span class="auth-required">🔒 Auth Required</span>
+            <p>List all users</p>
+        </div>
+
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/v1/users/{user_id}</strong>
+            <span class="auth-required">🔒 Auth Required</span>
+            <p>Get specific user by ID</p>
+        </div>
+
+        <h2>📚 Courses</h2>
+
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/v1/courses</strong>
+            <p>List all courses (public)</p>
+        </div>
+
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/v1/courses/{course_id}</strong>
+            <p>Get specific course by ID (public)</p>
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/v1/courses</strong>
+            <span class="auth-required">🔒 Auth Required (Staff Only)</span>
+            <p>Create new course</p>
+            <pre>{
+  "code": "CS101",
+  "name": "Intro to Programming",
+  "description": "Learn programming basics",
+  "price": 500000,
+  "credits": 3
+}</pre>
+        </div>
+
+        <h2>💬 Comments</h2>
+
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/v1/comments</strong>
+            <p>List all comments</p>
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/v1/comments</strong>
+            <span class="auth-required">🔒 Auth Required</span>
+            <p>Create comment on course content</p>
+            <pre>{
+  "content_id": 1,
+  "comment": "Great content!"
+}</pre>
+        </div>
+
+        <h2>🧪 Try It Out</h2>
+        <div class="try-it">
+            <h3>Test Login</h3>
+            <input type="text" id="username" placeholder="Username" value="admin">
+            <input type="password" id="password" placeholder="Password" value="admin">
+            <button class="btn btn-primary" onclick="testLogin()">Login</button>
+            
+            <div id="tokenInfo" class="token-info"></div>
+            
+            <h3 style="margin-top: 20px;">Test Authenticated Endpoint</h3>
+            <input type="text" id="authToken" placeholder="Paste token here">
+            <button class="btn btn-success" onclick="testUsers()">Get Users</button>
+            <button class="btn btn-success" onclick="testMe()">Get My Profile</button>
+            
+            <div id="response"></div>
+        </div>
+
+        <h2>📖 Additional Resources</h2>
+        <ul>
+            <li><a href="/api/v1/docs" target="_blank">Interactive API Docs (Swagger)</a></li>
+            <li><a href="/" target="_blank">Web Interface</a></li>
+            <li><a href="/admin/" target="_blank">Admin Panel</a></li>
+        </ul>
+    </div>
+
+    <script>
+        let currentToken = '';
+        let currentRefreshToken = '';
+
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/v1/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentToken = data.access;
+                    currentRefreshToken = data.refresh;
+                    document.getElementById('authToken').value = data.access;
+                    document.getElementById('tokenInfo').style.display = 'block';
+                    document.getElementById('tokenInfo').innerHTML = `
+                        ✅ Login Success!<br>
+                        Access Token: <code>${data.access.substring(0, 20)}...</code><br>
+                        Refresh Token: <code>${data.refresh.substring(0, 20)}...</code><br>
+                        User: ${data.user.username} (${data.user.email})<br>
+                        Token expires in 24 hours
+                    `;
+                }
+                
+                displayResponse(data, response.status);
+            } catch (error) {
+                displayResponse({ error: error.message }, 500);
+            }
+        }
+
+        async function testUsers() {
+            const token = document.getElementById('authToken').value || currentToken;
+            
+            if (!token) {
+                alert('Please login first!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/v1/users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                displayResponse(data, response.status);
+            } catch (error) {
+                displayResponse({ error: error.message }, 500);
+            }
+        }
+
+        async function testMe() {
+            const token = document.getElementById('authToken').value || currentToken;
+            
+            if (!token) {
+                alert('Please login first!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/v1/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                displayResponse(data, response.status);
+            } catch (error) {
+                displayResponse({ error: error.message }, 500);
+            }
+        }
+
+        function displayResponse(data, status) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = `<strong>Status: ${status}</strong>\n\n${JSON.stringify(data, null, 2)}`;
+        }
+    </script>
+</body>
+</html>

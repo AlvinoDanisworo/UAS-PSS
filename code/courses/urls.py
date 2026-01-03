@@ -5,6 +5,11 @@ urlpatterns = [
     # Home
     path('', views.home, name='home'),
     
+    # Authentication
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('profile/', views.profile_view, name='profile'),
+    
     # Course URLs
     path('courses/', views.course_list, name='course_list'),
     path('courses/create/', views.course_create, name='course_create'),
@@ -22,4 +27,8 @@ urlpatterns = [
     path('enrollments/create/', views.enrollment_create, name='enrollment_create'),
     path('enrollments/<int:pk>/update/', views.enrollment_update, name='enrollment_update'),
     path('enrollments/<int:pk>/delete/', views.enrollment_delete, name='enrollment_delete'),
+    
+    # API HTML
+    path('apihtml/', views.apihtml, name='apihtml'),
+    path('api-docs/', views.api_docs, name='api_docs'),
 ]

@@ -1,5 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.db.models import Q, Count
 from .models import Course, Enrollment, Material
@@ -240,3 +242,67 @@ def enrollment_delete(request, pk):
         return redirect('enrollment_list')
     
     return render(request, 'courses/enrollment_confirm_delete.html', {'enrollment': enrollment})
+
+
+# API HTML View
+def apihtml(request):
+    return render(request, 'apihtml.html')
+
+
+def api_docs(request):
+    """API Documentation page"""
+    return render(request, 'api_docs.html')
+
+
+# Authentication Views
+def login_view(request):
+    """Login view"""
+    if request.user.is_authenticated:
+        return redirect('home')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Selamat datang, {username}!')
+                next_url = request.GET.get('next', 'home')
+                return redirect(next_url)
+            else:
+                messages.error(request, 'Username atau password salah.')
+        else:
+            messages.error(request, 'Username atau password tidak valid.')
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'courses/login.html', {'form': form})
+
+
+def logout_view(request):
+    """Logout view"""
+    logout(request)
+    messages.info(request, 'Anda telah logout.')
+    return redirect('login')
+
+
+@login_required
+def profile_view(request):
+    """User profile view"""
+    if hasattr(request.user, 'enrollments'):
+        enrollments = request.user.enrollments.all()
+    else:
+        enrollments = []
+    
+    if hasattr(request.user, 'courses_taught'):
+        taught_courses = request.user.courses_taught.all()
+    else:
+        taught_courses = []
+    
+    context = {
+        'enrollments': enrollments,
+        'taught_courses': taught_courses,
+    }
+    return render(request, 'courses/profile.html', context)

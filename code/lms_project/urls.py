@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from courses.api import apiv1
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('courses.urls')),  # Include courses URLs
+    path('api/v1/', apiv1.urls),  # Include API URLs
 ]

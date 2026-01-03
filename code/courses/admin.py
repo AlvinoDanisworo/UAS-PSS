@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Enrollment, Material
+from .models import Course, Enrollment, Material, CourseMember, CourseContent, Comment
 
 # Register your models here.
 
@@ -22,3 +22,24 @@ class MaterialAdmin(admin.ModelAdmin):
     list_display = ['course', 'title', 'order', 'created_at']
     list_filter = ['course', 'created_at']
     search_fields = ['title', 'content', 'course__code']
+
+
+@admin.register(CourseMember)
+class CourseMemberAdmin(admin.ModelAdmin):
+    list_display = ['user_id', 'course', 'roles', 'joined_at']
+    list_filter = ['roles', 'joined_at']
+    search_fields = ['user_id__username', 'course__name']
+
+
+@admin.register(CourseContent)
+class CourseContentAdmin(admin.ModelAdmin):
+    list_display = ['course_id', 'name', 'order', 'created_at']
+    list_filter = ['course_id', 'created_at']
+    search_fields = ['name', 'description']
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['content_id', 'member_id', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['comment']
