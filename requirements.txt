@@ -4,3 +4,5 @@ pillow
 django-ninja
 django-ninja-jwt
 python-dotenv
+gunicorn
+whitenoise
