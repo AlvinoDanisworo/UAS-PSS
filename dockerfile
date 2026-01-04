@@ -20,5 +20,5 @@ RUN python manage.py collectstatic --noinput || true
 # Expose port
 EXPOSE 8000
 
-# Run gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "lms_project.wsgi:application"]
+# Run gunicorn - using shell form to allow $PORT expansion
+CMD gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 3 lms_project.wsgi:application

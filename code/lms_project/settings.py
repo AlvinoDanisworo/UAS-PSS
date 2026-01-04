@@ -30,9 +30,12 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-this')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
-if DEBUG:
-    ALLOWED_HOSTS.append('*')
+# ALLOWED_HOSTS configuration
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+# Always allow Railway domains
+ALLOWED_HOSTS.extend(['.railway.app', 'localhost', '127.0.0.1'])
+# Remove duplicates
+ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))
 
 
 # Application definition
@@ -83,16 +86,29 @@ WSGI_APPLICATION = 'lms_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', 'lms_db'),
-        'USER': os.getenv('DB_USER', 'lms_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'lms_password'),
-        'HOST': os.getenv('DB_HOST', 'postgres'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+import dj_database_url
+
+# Check if DATABASE_URL is provided (Railway, Heroku, etc.)
+if os.getenv('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Fallback to manual configuration
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
+            'NAME': os.getenv('DB_NAME', 'lms_db'),
+            'USER': os.getenv('DB_USER', 'lms_user'),
+            'PASSWORD': os.getenv('DB_PASSWORD', 'lms_password'),
+            'HOST': os.getenv('DB_HOST', 'postgres'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
+    }
 
 
 # Password validation
