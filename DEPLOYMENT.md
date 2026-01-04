@@ -49,6 +49,41 @@
    python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
    ```
 
+6. **Deploy Application**
+   - Railway will automatically deploy after detecting changes
+   - Wait for build to complete
+
+7. **⚠️ IMPORTANT: Run Database Migrations**
+   
+   After first successful deployment, you MUST run migrations manually:
+   
+   **Option A: Via Railway Dashboard**
+   - Go to your service → Settings → Deploy
+   - Scroll to "One-off Commands"
+   - Run: `python manage.py migrate`
+   - Then run: `python manage.py createsuperuser` (follow prompts)
+   
+   **Option B: Via Railway CLI**
+   ```bash
+   # Install Railway CLI first
+   npm i -g @railway/cli
+   
+   # Login and link project
+   railway login
+   railway link
+   
+   # Run migrations
+   railway run python manage.py migrate
+   
+   # Create superuser
+   railway run python manage.py createsuperuser
+   ```
+
+8. **Verify Deployment**
+   - Visit: `https://your-app-name.railway.app`
+   - Should see the LMS homepage
+   - Access admin: `https://your-app-name.railway.app/admin`
+
 6. **Deploy**
    - Railway will automatically deploy
    - Wait for build to complete (2-5 minutes)
