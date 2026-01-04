@@ -10,11 +10,17 @@ from .forms import CourseForm, EnrollmentForm, MaterialForm
 # Home/Dashboard View
 def home(request):
     """Dashboard utama LMS"""
-    total_courses = Course.objects.count()
-    total_enrollments = Enrollment.objects.count()
-    total_materials = Material.objects.count()
-    
-    recent_courses = Course.objects.all().order_by('-created_at')[:6]
+    try:
+        total_courses = Course.objects.count()
+        total_enrollments = Enrollment.objects.count()
+        total_materials = Material.objects.count()
+        recent_courses = Course.objects.all().order_by('-created_at')[:6]
+    except Exception:
+        # Database tables don't exist yet (migrations not run)
+        total_courses = 0
+        total_enrollments = 0
+        total_materials = 0
+        recent_courses = []
     
     context = {
         'total_courses': total_courses,
