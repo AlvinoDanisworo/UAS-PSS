@@ -98,14 +98,14 @@ if os.getenv('DATABASE_URL'):
         )
     }
 else:
-    # Fallback to manual configuration
+    # Fallback to manual configuration (for local dev or when DATABASE_URL not set)
     DATABASES = {
         'default': {
             'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
             'NAME': os.getenv('DB_NAME', 'lms_db'),
             'USER': os.getenv('DB_USER', 'lms_user'),
             'PASSWORD': os.getenv('DB_PASSWORD', 'lms_password'),
-            'HOST': os.getenv('DB_HOST', 'postgres'),
+            'HOST': os.getenv('DB_HOST', 'localhost'),  # Changed from 'postgres' to avoid Docker-specific config
             'PORT': os.getenv('DB_PORT', '5432'),
         }
     }

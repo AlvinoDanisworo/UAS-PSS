@@ -9,5 +9,4 @@ pip install -r requirements.txt
 # Collect static files (already in /code from WORKDIR)
 python manage.py collectstatic --no-input
 
-# Run migrations
-python manage.py migrate
+# Note: Don't run migrate here - Railway will do it separately or manually
