@@ -17,8 +17,12 @@ COPY code/ /code/
 # Collect static files
 RUN python manage.py collectstatic --noinput || true
 
+# Copy start script
+COPY start.sh /code/
+RUN chmod +x /code/start.sh
+
 # Expose port
 EXPOSE 8000
 
-# Run gunicorn - using shell form to allow $PORT expansion
-CMD gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 3 lms_project.wsgi:application
+# Run start script
+CMD ["/code/start.sh"]
