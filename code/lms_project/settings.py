@@ -170,6 +170,12 @@ LOGOUT_REDIRECT_URL = 'login'
 SESSION_COOKIE_AGE = 86400  # 1 day in seconds
 SESSION_SAVE_EVERY_REQUEST = True
 
+# Proxy and SSL configuration for Railway/production
+# Railway terminates HTTPS at the proxy level and forwards as HTTP
+# Django needs to know the original request was HTTPS via X-Forwarded-Proto header
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
 # Security settings for production
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
