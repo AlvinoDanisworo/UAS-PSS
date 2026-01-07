@@ -35,16 +35,20 @@ def home(request):
 def course_list(request):
     """List semua courses dengan search functionality"""
     query = request.GET.get('q', '')
-    courses = Course.objects.all()
-    
-    if query:
-        courses = courses.filter(
-            Q(code__icontains=query) | 
-            Q(name__icontains=query) |
-            Q(description__icontains=query)
-        )
-    
-    courses = courses.annotate(enrollment_count=Count('enrollments'))
+    try:
+        courses = Course.objects.all()
+        
+        if query:
+            courses = courses.filter(
+                Q(code__icontains=query) | 
+                Q(name__icontains=query) |
+                Q(description__icontains=query)
+            )
+        
+        courses = courses.annotate(enrollment_count=Count('enrollments'))
+    except Exception:
+        # Database tables don't exist yet
+        courses = []
     
     context = {
         'courses': courses,
@@ -181,18 +185,23 @@ def material_delete(request, pk):
 # Enrollment Views
 def enrollment_list(request):
     """List all enrollments"""
-    enrollments = Enrollment.objects.select_related('student', 'course').all()
-    all_courses = Course.objects.all()
-    
-    # Filter by student search
-    student_query = request.GET.get('student', '')
-    if student_query:
-        enrollments = enrollments.filter(student__username__icontains=student_query)
-    
-    # Filter by course
-    course_filter = request.GET.get('course', '')
-    if course_filter:
-        enrollments = enrollments.filter(course__pk=course_filter)
+    try:
+        enrollments = Enrollment.objects.select_related('student', 'course').all()
+        all_courses = Course.objects.all()
+        
+        # Filter by student search
+        student_query = request.GET.get('student', '')
+        if student_query:
+            enrollments = enrollments.filter(student__username__icontains=student_query)
+        
+        # Filter by course
+        course_filter = request.GET.get('course', '')
+        if course_filter:
+            enrollments = enrollments.filter(course__pk=course_filter)
+    except Exception:
+        # Database tables don't exist yet
+        enrollments = []
+        all_courses = []
     
     context = {
         'enrollments': enrollments,
