@@ -1,6 +1,7 @@
 from ninja import Router
 from ninja.errors import HttpError
 from ninja_jwt.tokens import RefreshToken
+from ninja_jwt.authentication import JWTAuth
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -8,6 +9,7 @@ from .auth_schemas import RegisterSchema, LoginSchema, TokenResponseSchema, Mess
 from .throttling import throttle_strict
 
 auth_router = Router(tags=['Authentication'])
+jwt_auth = JWTAuth()
 
 
 @auth_router.post('/register', response={201: TokenResponseSchema, 400: MessageSchema})
@@ -110,4 +112,23 @@ def logout(request):
     return {
         'message': 'Logout berhasil',
         'detail': 'Silakan hapus token dari client'
+    }
+
+
+@auth_router.get('/verify', auth=jwt_auth, response={200: dict, 401: MessageSchema})
+def verify_token(request):
+    """
+    Verify JWT token and return user info
+    """
+    user = request.auth
+    return {
+        'valid': True,
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'is_staff': user.is_staff
+        }
     }

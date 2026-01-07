@@ -230,8 +230,12 @@ document.getElementById('login-form').addEventListener('submit', async function(
             localStorage.setItem('refresh_token', data.refresh);
             localStorage.setItem('user', JSON.stringify(data.user));
             
-            // Redirect to home
-            window.location.href = '/';
+            // Get next URL from query param or default to home
+            const urlParams = new URLSearchParams(window.location.search);
+            const nextUrl = urlParams.get('next') || '/';
+            
+            // Redirect
+            window.location.href = nextUrl;
         } else {
             // Show error
             errorDiv.textContent = data.message || 'Login gagal. Silakan coba lagi.';
