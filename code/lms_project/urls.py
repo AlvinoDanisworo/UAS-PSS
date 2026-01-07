@@ -17,9 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from courses.api import apiv1
+from courses.health import health_check
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('health/', health_check, name='health_check'),  # Health check endpoint
     path('', include('courses.urls')),  # Include courses URLs
     path('api/v1/', apiv1.urls),  # Include API URLs
 ]
