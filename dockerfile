@@ -19,7 +19,8 @@ RUN python manage.py collectstatic --noinput || true
 
 # Copy start script
 COPY start.sh /code/
-RUN chmod +x /code/start.sh
+COPY predeploy.sh /code/
+RUN chmod +x /code/start.sh /code/predeploy.sh
 
 # Expose port
 EXPOSE 8000
