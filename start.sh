@@ -3,6 +3,17 @@
 # Start script for Railway deployment
 # This script properly handles the PORT environment variable
 
+# Debug: Check if DATABASE_URL is set
+echo "=== Environment Check ==="
+if [ -z "$DATABASE_URL" ]; then
+    echo "ERROR: DATABASE_URL is NOT set!"
+    echo "Database will fallback to localhost (which will fail)"
+else
+    echo "DATABASE_URL is set: ${DATABASE_URL:0:30}..." # Show only first 30 chars for security
+fi
+echo "PORT: ${PORT}"
+echo "========================="
+
 # Run migrations first (with retry logic)
 echo "Running database migrations..."
 max_retries=5
