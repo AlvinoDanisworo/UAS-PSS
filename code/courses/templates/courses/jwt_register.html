@@ -117,6 +117,8 @@
         border-radius: 8px;
         margin-bottom: 20px;
         font-size: 14px;
+        white-space: pre-wrap; /* Preserve newlines */
+        word-wrap: break-word;
     }
     
     .alert-danger {
@@ -310,6 +312,9 @@ document.getElementById('register-form').addEventListener('submit', async functi
         
         const data = await response.json();
         
+        // Debug: log the response
+        console.log('Register response:', response.status, data);
+        
         if (response.ok) {
             // Store tokens
             localStorage.setItem('access_token', data.access);
@@ -321,6 +326,9 @@ document.getElementById('register-form').addEventListener('submit', async functi
         } else {
             // Show error - handle various error formats
             let errorMessage = 'Registrasi gagal. Silakan coba lagi.';
+            
+            // Debug: log the error data structure
+            console.error('Error data:', data, 'Type:', typeof data);
             
             if (typeof data === 'string') {
                 errorMessage = data;
@@ -344,6 +352,7 @@ document.getElementById('register-form').addEventListener('submit', async functi
             } else {
                 // If data is an object without known error fields, try to extract useful info
                 const keys = Object.keys(data);
+                console.error('Unknown error format, keys:', keys);
                 if (keys.length > 0) {
                     const errors = [];
                     for (const key of keys) {
@@ -352,11 +361,16 @@ document.getElementById('register-form').addEventListener('submit', async functi
                             errors.push(`${key}: ${value.join(', ')}`);
                         } else if (typeof value === 'string') {
                             errors.push(`${key}: ${value}`);
+                        } else {
+                            errors.push(`${key}: ${JSON.stringify(value)}`);
                         }
                     }
                     if (errors.length > 0) {
                         errorMessage = errors.join('\n');
                     }
+                } else {
+                    // Last resort: stringify the whole object
+                    errorMessage = JSON.stringify(data);
                 }
             }
             
