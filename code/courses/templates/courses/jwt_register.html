@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register - LMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+    }
+    
+    .auth-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        padding: 40px;
+        max-width: 450px;
+        width: 100%;
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .auth-header h1 {
+        color: #667eea;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .auth-header p {
+        color: #666;
+        margin: 0;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .btn-register {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-register:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .auth-footer {
+        text-align: center;
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 1px solid #e0e0e0;
+    }
+    
+    .auth-footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    .alert {
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+    
+    .alert-danger {
+        background-color: #fee;
+        border: 1px solid #fcc;
+        color: #c33;
+    }
+    
+    .alert-success {
+        background-color: #efe;
+        border: 1px solid #cfc;
+        color: #3c3;
+    }
+    
+    .password-requirements {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+        padding-left: 15px;
+    }
+    
+    .password-requirements li {
+        margin: 3px 0;
+    }
+    
+    .spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .btn-register.loading .btn-text {
+        display: none;
+    }
+    
+    .btn-register.loading .spinner {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>🎓 Daftar LMS</h1>
+            <p>Buat akun baru Anda</p>
+        </div>
+        
+        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+        
+        <form id="register-form">
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    class="form-control" 
+                    required
+                    minlength="3"
+                    autocomplete="username"
+                    placeholder="Pilih username unik">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-control" 
+                    required
+                    autocomplete="email"
+                    placeholder="email@example.com">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name">Nama Depan</label>
+                    <input 
+                        type="text" 
+                        id="first_name" 
+                        name="first_name" 
+                        class="form-control"
+                        autocomplete="given-name"
+                        placeholder="Nama depan">
+                </div>
+                
+                <div class="form-group">
+                    <label for="last_name">Nama Belakang</label>
+                    <input 
+                        type="text" 
+                        id="last_name" 
+                        name="last_name" 
+                        class="form-control"
+                        autocomplete="family-name"
+                        placeholder="Nama belakang">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-control" 
+                    required
+                    minlength="8"
+                    autocomplete="new-password"
+                    placeholder="Minimal 8 karakter">
+                <ul class="password-requirements">
+                    <li>Minimal 8 karakter</li>
+                    <li>Mengandung huruf besar</li>
+                    <li>Mengandung angka</li>
+                </ul>
+            </div>
+            
+            <div class="form-group">
+                <label for="password_confirm">Konfirmasi Password *</label>
+                <input 
+                    type="password" 
+                    id="password_confirm" 
+                    name="password_confirm" 
+                    class="form-control" 
+                    required
+                    minlength="8"
+                    autocomplete="new-password"
+                    placeholder="Ulangi password">
+            </div>
+            
+            <button type="submit" class="btn-register" id="register-btn">
+                <span class="btn-text">Daftar</span>
+                <div class="spinner"></div>
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Sudah punya akun? <a href="{% url 'jwt_login' %}">Login sekarang</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('register-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('register-btn');
+    const errorDiv = document.getElementById('error-message');
+    
+    // Get form data
+    const formData = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        password_confirm: document.getElementById('password_confirm').value,
+        first_name: document.getElementById('first_name').value || null,
+        last_name: document.getElementById('last_name').value || null
+    };
+    
+    // Validate password match
+    if (formData.password !== formData.password_confirm) {
+        errorDiv.textContent = 'Password dan konfirmasi password tidak cocok';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    // Show loading state
+    btn.classList.add('loading');
+    btn.disabled = true;
+    errorDiv.style.display = 'none';
+    
+    try {
+        const response = await fetch('/api/v1/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Store tokens
+            localStorage.setItem('access_token', data.access);
+            localStorage.setItem('refresh_token', data.refresh);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            
+            // Redirect to home
+            window.location.href = '/';
+        } else {
+            // Show error
+            errorDiv.textContent = data.message || data.detail || 'Registrasi gagal. Silakan coba lagi.';
+            errorDiv.style.display = 'block';
+        }
+    } catch (error) {
+        errorDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+        errorDiv.style.display = 'block';
+    } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+});
+</script>
+{% endblock %}

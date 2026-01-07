@@ -271,7 +271,7 @@ def api_docs(request):
 
 # Authentication Views
 def login_view(request):
-    """Login view"""
+    """Login view (session-based)"""
     if request.user.is_authenticated:
         return redirect('home')
     
@@ -294,6 +294,16 @@ def login_view(request):
         form = AuthenticationForm()
     
     return render(request, 'courses/login.html', {'form': form})
+
+
+def jwt_login_view(request):
+    """JWT Login view"""
+    return render(request, 'courses/jwt_login.html')
+
+
+def jwt_register_view(request):
+    """JWT Register view"""
+    return render(request, 'courses/jwt_register.html')
 
 
 def logout_view(request):

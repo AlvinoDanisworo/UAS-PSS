@@ -10,10 +10,14 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from .models import CourseMember, CourseContent, Comment, Course
 from .throttling import throttle, throttle_strict, throttle_moderate
+from .auth_api import auth_router
 from typing import List, Optional
 
 apiv1 = NinjaAPI()
 auth = JWTAuth()
+
+# Include auth router
+apiv1.add_router('/auth', auth_router)
 
 # Custom Pagination
 class CustomPagination(PageNumberPagination):

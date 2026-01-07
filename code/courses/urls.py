@@ -5,10 +5,14 @@ urlpatterns = [
     # Home
     path('', views.home, name='home'),
     
-    # Authentication
+    # Authentication (Session-based)
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
+    
+    # Authentication (JWT)
+    path('auth/login/', views.jwt_login_view, name='jwt_login'),
+    path('auth/register/', views.jwt_register_view, name='register'),
     
     # Course URLs
     path('courses/', views.course_list, name='course_list'),
