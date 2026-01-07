@@ -319,11 +319,52 @@ document.getElementById('register-form').addEventListener('submit', async functi
             // Redirect to home
             window.location.href = '/';
         } else {
-            // Show error
-            errorDiv.textContent = data.message || data.detail || 'Registrasi gagal. Silakan coba lagi.';
+            // Show error - handle various error formats
+            let errorMessage = 'Registrasi gagal. Silakan coba lagi.';
+            
+            if (typeof data === 'string') {
+                errorMessage = data;
+            } else if (data.message) {
+                errorMessage = data.message;
+            } else if (data.detail) {
+                errorMessage = data.detail;
+            } else if (data.error) {
+                errorMessage = data.error;
+            } else if (data.errors) {
+                // Handle validation errors (e.g., {username: ["error"], email: ["error"]})
+                const errors = [];
+                for (const [field, messages] of Object.entries(data.errors)) {
+                    if (Array.isArray(messages)) {
+                        errors.push(`${field}: ${messages.join(', ')}`);
+                    } else {
+                        errors.push(`${field}: ${messages}`);
+                    }
+                }
+                errorMessage = errors.join('\n');
+            } else {
+                // If data is an object without known error fields, try to extract useful info
+                const keys = Object.keys(data);
+                if (keys.length > 0) {
+                    const errors = [];
+                    for (const key of keys) {
+                        const value = data[key];
+                        if (Array.isArray(value)) {
+                            errors.push(`${key}: ${value.join(', ')}`);
+                        } else if (typeof value === 'string') {
+                            errors.push(`${key}: ${value}`);
+                        }
+                    }
+                    if (errors.length > 0) {
+                        errorMessage = errors.join('\n');
+                    }
+                }
+            }
+            
+            errorDiv.textContent = errorMessage;
             errorDiv.style.display = 'block';
         }
     } catch (error) {
+        console.error('Registration error:', error);
         errorDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
         errorDiv.style.display = 'block';
     } finally {
