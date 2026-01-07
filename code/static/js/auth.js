@@ -18,13 +18,17 @@ const PUBLIC_PAGES = [
 async function checkAuth() {
     const currentPath = window.location.pathname;
     
-    // Check if current page requires authentication
-    const requiresAuth = AUTH_CHECK_PAGES.some(page => 
+    // Check if current page is public first
+    const isPublicPage = PUBLIC_PAGES.some(page => 
         currentPath === page || currentPath.startsWith(page)
     );
     
-    // Check if current page is public
-    const isPublicPage = PUBLIC_PAGES.some(page => 
+    if (isPublicPage) {
+        return; // Public page, no auth check needed
+    }
+    
+    // Check if current page requires authentication
+    const requiresAuth = AUTH_CHECK_PAGES.some(page => 
         currentPath === page || currentPath.startsWith(page)
     );
     
@@ -156,13 +160,29 @@ function updateNavbar() {
 // Add logout function to window for global access
 window.logoutUser = logout;
 
-// Check auth on page load and update navbar
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
+// Initialize auth check and navbar update
+function initAuth() {
+    const currentPath = window.location.pathname;
+    
+    // Check if current page is public
+    const isPublicPage = PUBLIC_PAGES.some(page => 
+        currentPath === page || currentPath.startsWith(page)
+    );
+    
+    // Run auth check for protected pages
+    if (!isPublicPage) {
         checkAuth();
+    }
+    
+    // Update navbar if elements exist (regardless of page type)
+    if (document.getElementById('jwt-user-section') || document.getElementById('login-section')) {
         updateNavbar();
-    });
+    }
+}
+
+// Run on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAuth);
 } else {
-    checkAuth();
-    updateNavbar();
+    initAuth();
 }
