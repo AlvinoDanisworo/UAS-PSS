@@ -34,6 +34,14 @@ if [ $retry_count -eq $max_retries ]; then
     echo "Warning: Migrations failed after $max_retries attempts. Starting anyway..."
 fi
 
+# Collect static files
+echo "Collecting static files..."
+python manage.py collectstatic --noinput || echo "Warning: collectstatic failed"
+
+# Setup demo data (only if database is empty)
+echo "Setting up demo data..."
+python manage.py setup_demo || echo "Demo data already exists or setup failed"
+
 # Use PORT from environment or default to 8000
 PORT=${PORT:-8000}
 
