@@ -103,7 +103,7 @@
                             <tbody>
                                 {% for enrollment in enrollments %}
                                 <tr>
-                                    <td class="px-4">{{ forloop.counter }}</td>
+                                    <td class="px-4">{{ enrollments.start_index|add:forloop.counter0 }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
@@ -166,14 +166,70 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light border-top">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <small class="text-muted mb-2 mb-md-0">
                             <i class="bi bi-info-circle me-1"></i>
-                            Menampilkan {{ enrollments|length }} enrollment(s)
+                            Menampilkan {{ enrollments.start_index }} - {{ enrollments.end_index }} dari {{ enrollments.paginator.count }} enrollment(s)
                         </small>
-                        <a href="{% url 'enrollment_create' %}" class="btn btn-sm btn-primary">
-                            <i class="bi bi-plus-circle me-1"></i>Tambah Enrollment
-                        </a>
+                        
+                        <!-- Pagination -->
+                        {% if enrollments.has_other_pages %}
+                        <nav aria-label="Pagination">
+                            <ul class="pagination pagination-sm mb-0">
+                                {% if enrollments.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if student_query %}&student={{ student_query }}{% endif %}{% if course_filter %}&course={{ course_filter }}{% endif %}">
+                                        <i class="bi bi-chevron-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ enrollments.previous_page_number }}{% if student_query %}&student={{ student_query }}{% endif %}{% if course_filter %}&course={{ course_filter }}{% endif %}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="bi bi-chevron-double-left"></i></span>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+                                </li>
+                                {% endif %}
+
+                                {% for num in enrollments.paginator.page_range %}
+                                    {% if enrollments.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                    {% elif num > enrollments.number|add:'-3' and num < enrollments.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if student_query %}&student={{ student_query }}{% endif %}{% if course_filter %}&course={{ course_filter }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if enrollments.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ enrollments.next_page_number }}{% if student_query %}&student={{ student_query }}{% endif %}{% if course_filter %}&course={{ course_filter }}{% endif %}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ enrollments.paginator.num_pages }}{% if student_query %}&student={{ student_query }}{% endif %}{% if course_filter %}&course={{ course_filter }}{% endif %}">
+                                        <i class="bi bi-chevron-double-right"></i>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="bi bi-chevron-double-right"></i></span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
                     </div>
                 </div>
             </div>

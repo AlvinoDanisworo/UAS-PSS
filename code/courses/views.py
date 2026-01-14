@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.db.models import Q, Count
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Course, Enrollment, Material
 from .forms import CourseForm, EnrollmentForm, MaterialForm
 
@@ -60,12 +61,34 @@ def course_list(request):
 def course_detail(request, pk):
     """Detail course dengan materials dan enrollments"""
     course = get_object_or_404(Course, pk=pk)
-    materials = course.materials.all()
-    enrollments = course.enrollments.select_related('student')[:10]
+    materials = course.materials.all().order_by('order')
+    enrollments_list = course.enrollments.select_related('student').all()
+    
+    # Pagination untuk enrollments
+    enrollments_paginator = Paginator(enrollments_list, 10)  # 10 enrollments per page
+    enrollments_page = request.GET.get('enrollments_page', 1)
+    
+    try:
+        enrollments = enrollments_paginator.page(enrollments_page)
+    except PageNotAnInteger:
+        enrollments = enrollments_paginator.page(1)
+    except EmptyPage:
+        enrollments = enrollments_paginator.page(enrollments_paginator.num_pages)
+    
+    # Pagination untuk materials
+    materials_paginator = Paginator(materials, 10)  # 10 materials per page
+    materials_page = request.GET.get('materials_page', 1)
+    
+    try:
+        materials_paginated = materials_paginator.page(materials_page)
+    except PageNotAnInteger:
+        materials_paginated = materials_paginator.page(1)
+    except EmptyPage:
+        materials_paginated = materials_paginator.page(materials_paginator.num_pages)
     
     context = {
         'course': course,
-        'materials': materials,
+        'materials': materials_paginated,
         'enrollments': enrollments,
     }
     return render(request, 'courses/course_detail.html', context)
@@ -186,18 +209,30 @@ def material_delete(request, pk):
 def enrollment_list(request):
     """List all enrollments"""
     try:
-        enrollments = Enrollment.objects.select_related('student', 'course').all()
+        enrollments_list = Enrollment.objects.select_related('student', 'course').all()
         all_courses = Course.objects.all()
         
         # Filter by student search
         student_query = request.GET.get('student', '')
         if student_query:
-            enrollments = enrollments.filter(student__username__icontains=student_query)
+            enrollments_list = enrollments_list.filter(student__username__icontains=student_query)
         
         # Filter by course
         course_filter = request.GET.get('course', '')
         if course_filter:
-            enrollments = enrollments.filter(course__pk=course_filter)
+            enrollments_list = enrollments_list.filter(course__pk=course_filter)
+        
+        # Pagination
+        paginator = Paginator(enrollments_list, 15)  # 15 enrollments per page
+        page = request.GET.get('page', 1)
+        
+        try:
+            enrollments = paginator.page(page)
+        except PageNotAnInteger:
+            enrollments = paginator.page(1)
+        except EmptyPage:
+            enrollments = paginator.page(paginator.num_pages)
+            
     except Exception:
         # Database tables don't exist yet
         enrollments = []
@@ -206,6 +241,8 @@ def enrollment_list(request):
     context = {
         'enrollments': enrollments,
         'all_courses': all_courses,
+        'student_query': student_query,
+        'course_filter': course_filter,
     }
     return render(request, 'courses/enrollment_list.html', context)
 

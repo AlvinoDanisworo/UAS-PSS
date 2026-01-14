@@ -49,7 +49,7 @@
                             <h6 class="fw-bold text-muted mb-2">
                                 <i class="bi bi-people-fill me-2"></i>Mahasiswa Terdaftar
                             </h6>
-                            <p class="mb-0">{{ enrollments.count }} mahasiswa</p>
+                            <p class="mb-0">{{ enrollments.paginator.count }} mahasiswa</p>
                         </div>
                         <div class="col-md-6">
                             <h6 class="fw-bold text-muted mb-2">
@@ -111,6 +111,43 @@
                             </div>
                             {% endfor %}
                         </div>
+                        
+                        <!-- Materials Pagination -->
+                        {% if materials.has_other_pages %}
+                        <div class="mt-3">
+                            <nav aria-label="Materials pagination">
+                                <ul class="pagination pagination-sm justify-content-center mb-0">
+                                    {% if materials.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?materials_page={{ materials.previous_page_number }}{% if request.GET.enrollments_page %}&enrollments_page={{ request.GET.enrollments_page }}{% endif %}">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    
+                                    {% for num in materials.paginator.page_range %}
+                                        {% if materials.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                        {% elif num > materials.number|add:'-3' and num < materials.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?materials_page={{ num }}{% if request.GET.enrollments_page %}&enrollments_page={{ request.GET.enrollments_page }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if materials.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?materials_page={{ materials.next_page_number }}{% if request.GET.enrollments_page %}&enrollments_page={{ request.GET.enrollments_page }}{% endif %}">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                        {% endif %}
                     {% else %}
                         <div class="text-center py-4">
                             <i class="bi bi-inbox display-4 text-muted mb-3 d-block"></i>
@@ -178,13 +215,49 @@
                             </div>
                             {% endfor %}
                         </div>
-                        {% if enrollments.count >= 10 %}
-                        <div class="text-center mt-3">
-                            <a href="{% url 'enrollment_list' %}" class="btn btn-sm btn-outline-primary">
-                                Lihat Semua Enrollment
-                            </a>
+                        
+                        <!-- Enrollments Pagination -->
+                        {% if enrollments.has_other_pages %}
+                        <div class="mt-3">
+                            <nav aria-label="Enrollments pagination">
+                                <ul class="pagination pagination-sm justify-content-center mb-0">
+                                    {% if enrollments.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?enrollments_page={{ enrollments.previous_page_number }}{% if request.GET.materials_page %}&materials_page={{ request.GET.materials_page }}{% endif %}">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    
+                                    {% for num in enrollments.paginator.page_range %}
+                                        {% if enrollments.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                        {% elif num > enrollments.number|add:'-3' and num < enrollments.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?enrollments_page={{ num }}{% if request.GET.materials_page %}&materials_page={{ request.GET.materials_page }}{% endif %}">{{ num }}</a>
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if enrollments.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?enrollments_page={{ enrollments.next_page_number }}{% if request.GET.materials_page %}&materials_page={{ request.GET.materials_page }}{% endif %}">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
                         </div>
                         {% endif %}
+                        
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                Menampilkan {{ enrollments.start_index }}-{{ enrollments.end_index }} dari {{ enrollments.paginator.count }}
+                            </small>
+                        </div>
                     {% else %}
                         <div class="text-center py-3">
                             <i class="bi bi-person-x display-6 text-muted d-block mb-2"></i>
